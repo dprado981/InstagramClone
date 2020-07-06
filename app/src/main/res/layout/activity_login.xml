@@ -9,6 +9,14 @@
     android:orientation="vertical"
     tools:context=".LoginActivity">
 
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="match_parent"
+        android:layout_height="111dp"
+        android:layout_weight="1"
+        android:contentDescription="@string/instagram_logo"
+        android:src="@drawable/nav_logo_whiteout" />
+
     <EditText
         android:id="@+id/etUsername"
         android:layout_width="match_parent"
@@ -37,5 +45,13 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="@string/login" />
+
+    <ProgressBar
+        android:id="@+id/pbLogin"
+        style="@android:style/Widget.Material.ProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:visibility="gone" />
 
 </LinearLayout>
