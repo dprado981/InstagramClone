@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Instagram Clone</string>
+    <string name="app_name">Parsetragram</string>
     <!-- Strings related to login -->
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
@@ -13,4 +13,6 @@
     <string name="home">Home</string>
     <string name="compose">Compose</string>
     <string name="profile">Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
