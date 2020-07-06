@@ -1,4 +1,4 @@
-package com.codepath.instagramclone;
+package com.codepath.parsetagram;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.codepath.instagramclone", appContext.getPackageName());
+        assertEquals("com.codepath.parsetagram", appContext.getPackageName());
     }
 }

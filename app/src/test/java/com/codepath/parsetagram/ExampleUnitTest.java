@@ -1,4 +1,4 @@
-package com.codepath.instagramclone;
+package com.codepath.parsetagram;
 
 import org.junit.Test;
 

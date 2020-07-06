@@ -6,4 +6,8 @@
     <string name="welcome">"Welcome !"</string>
     <string name="login">Login</string>
     <string name="instagram_logo">Instagram Logo</string>
+    <string name="post">Post</string>
+    <string name="take_a_picture">Take a Picture</string>
+    <string name="description">Description</string>
+    <string name="captured_image">Captured image</string>
 </resources>
