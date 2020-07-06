@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.codepath.parsetagram.fragments.ComposeFragment;
 import com.codepath.parsetagram.fragments.PostsFragment;
+import com.codepath.parsetagram.fragments.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.actionProfile:
                     default:
                         // TODO: Update fragment
-                        fragment = new ComposeFragment();
+                        fragment = new ProfileFragment();
                         break;
                 }
                 fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
