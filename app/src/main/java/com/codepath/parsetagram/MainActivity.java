@@ -1,8 +1,10 @@
 package com.codepath.parsetagram;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,12 +15,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationMenu;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -39,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnCapture;
     private ImageView ivPreview;
     private Button btnPost;
+    private BottomNavigationView bottomNavigation;
 
     private File photoFile;
     private static final String photoFileName = "photo.jpg";
@@ -55,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         btnCapture = findViewById(R.id.btnCapture);
         ivPreview = findViewById(R.id.ivPreview);
         btnPost = findViewById(R.id.btnPost);
+        bottomNavigation = findViewById(R.id.bottomNavigation);
 
         btnCapture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +84,26 @@ public class MainActivity extends AppCompatActivity {
                 }
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 savePost(description, photoFile, currentUser);
+            }
+        });
+
+        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Fragment fragment;
+                switch (item.getItemId()) {
+                    case R.id.actionHome:
+                        Toast.makeText(context, "Home", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.actionCompose:
+                        Toast.makeText(context, "Compose", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.actionProfile:
+                        Toast.makeText(context, "Profile", Toast.LENGTH_SHORT).show();
+                    default:
+                        break;
+                }
+                return true;
             }
         });
 
