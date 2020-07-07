@@ -6,20 +6,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 
 import com.codepath.parsetagram.LoginActivity;
-import com.codepath.parsetagram.MainActivity;
 import com.codepath.parsetagram.Post;
 import com.codepath.parsetagram.R;
 import com.parse.FindCallback;
-import com.parse.LogInCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -66,8 +62,10 @@ public class ProfileFragment extends PostsFragment {
                 for(Post post : posts) {
                     Log.i(TAG, "Post: " + post.getDescription() + ", Username: " + post.getUser().getUsername());
                 }
+                adapter.clear();
                 allPosts.addAll(posts);
                 adapter.notifyDataSetChanged();
+                swipeContainer.setRefreshing(false);
             }
         });
     }
