@@ -33,12 +33,11 @@ public class PostsFragment extends Fragment {
 
     public static final String TAG = PostsFragment.class.getSimpleName();
 
-    protected Context context;
-    protected LinearLayout llHeader;
-    protected PostsAdapter adapter;
-    protected SwipeRefreshLayout swipeContainer;
+    private Context context;
+    private PostsAdapter adapter;
+    private SwipeRefreshLayout swipeContainer;
 
-    protected List<Post> allPosts;
+    private List<Post> allPosts;
 
     private RecyclerView rvPosts;
 
@@ -59,14 +58,11 @@ public class PostsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         context = getContext();
-        llHeader = view.findViewById(R.id.llHeader);
         swipeContainer = view.findViewById(R.id.swipeContainer);
         rvPosts = view.findViewById(R.id.rvPosts);
 
-        llHeader.setVisibility(View.GONE);
-
         allPosts = new ArrayList<>();
-        adapter = new PostsAdapter(context, allPosts);
+        adapter = new PostsAdapter(context, allPosts, false);
 
         rvPosts.setAdapter(adapter);
 
@@ -91,7 +87,7 @@ public class PostsFragment extends Fragment {
                 android.R.color.holo_red_light);
     }
 
-    protected void queryPosts() {
+    private void queryPosts() {
         // Specify which class to query
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         // Find all posts

@@ -21,19 +21,21 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     private Context context;
     private List<Post> posts;
+    private boolean forProfileView;
 
     public static final String TAG = PostsAdapter.class.getSimpleName();
 
-    public PostsAdapter(Context context, List<Post> posts) {
+    public PostsAdapter(Context context, List<Post> posts, boolean forProfileView) {
         this.context = context;
         this.posts = posts;
+        this.forProfileView = forProfileView;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_post, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, forProfileView);
     }
 
     @Override
@@ -66,12 +68,16 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         private TextView tvDescription;
         private Post post;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, boolean forProfileView) {
             super(itemView);
             tvUsername = itemView.findViewById(R.id.tvUsername);
             ivImage = itemView.findViewById(R.id.ivImage);
             tvDescription = itemView.findViewById(R.id.tvDescription);
             itemView.setOnClickListener(this);
+            if(forProfileView) {
+                tvUsername.setVisibility(View.GONE);
+                tvDescription.setVisibility(View.GONE);
+            }
         }
 
         @Override
