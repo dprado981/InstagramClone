@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.codepath.parsetagram.EndlessRecyclerViewScrollListener;
 import com.codepath.parsetagram.Post;
 import com.codepath.parsetagram.PostsAdapter;
 import com.codepath.parsetagram.R;
@@ -24,6 +25,7 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,6 +38,7 @@ public class PostsFragment extends Fragment {
     private Context context;
     private PostsAdapter adapter;
     private SwipeRefreshLayout swipeContainer;
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     private List<Post> allPosts;
 
@@ -66,8 +69,22 @@ public class PostsFragment extends Fragment {
 
         rvPosts.setAdapter(adapter);
 
-        rvPosts.setLayoutManager(new LinearLayoutManager(context));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        rvPosts.setLayoutManager(linearLayoutManager);
+        
         queryPosts();
+
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                loadNextDataFromApi(page);
+            }
+        };
+
+        // Adds the scroll listener to RecyclerView
+        rvPosts.addOnScrollListener(scrollListener);
 
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -85,6 +102,32 @@ public class PostsFragment extends Fragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+    }
+
+    private void loadNextDataFromApi(int page) {
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.include(Post.KEY_USER);
+        query.setLimit(20);
+        Date olderThanDate = allPosts.get(allPosts.size()-1).getCreatedAt();
+        Log.d(TAG, "Getting posts older than: " + olderThanDate);
+        query.whereLessThan(Post.KEY_CREATED_AT,
+                allPosts.get(allPosts.size()-1).getCreatedAt());
+        query.addDescendingOrder(Post.KEY_CREATED_AT);
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> posts, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Issue with getting posts", e);
+                    return;
+                }
+                for(Post post : posts) {
+                    Log.i(TAG, "Post: " + post.getDescription() + ", Username: " + post.getUser().getUsername());
+                }
+                adapter.addAll(posts);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
     }
 
     private void queryPosts() {
@@ -107,6 +150,7 @@ public class PostsFragment extends Fragment {
                 adapter.clear();
                 adapter.addAll(posts);
                 adapter.notifyDataSetChanged();
+                scrollListener.resetState();
                 swipeContainer.setRefreshing(false);
             }
         });

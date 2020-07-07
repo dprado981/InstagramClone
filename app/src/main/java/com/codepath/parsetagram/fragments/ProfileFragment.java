@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codepath.parsetagram.EndlessRecyclerViewScrollListener;
 import com.codepath.parsetagram.LoginActivity;
 import com.codepath.parsetagram.Post;
 import com.codepath.parsetagram.PostsAdapter;
@@ -33,6 +34,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,6 +51,7 @@ public class ProfileFragment extends Fragment {
     private PostsAdapter adapter;
     private RecyclerView rvPosts;
     private SwipeRefreshLayout swipeContainer;
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     private List<Post> allPosts;
 
@@ -77,8 +80,21 @@ public class ProfileFragment extends Fragment {
 
         rvPosts.setAdapter(adapter);
 
-        rvPosts.setLayoutManager(new GridLayoutManager(context, 3));
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 3);
+        rvPosts.setLayoutManager(gridLayoutManager);
         queryPosts();
+
+        scrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                loadNextDataFromApi(page);
+            }
+        };
+
+        // Adds the scroll listener to RecyclerView
+        rvPosts.addOnScrollListener(scrollListener);
 
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -90,6 +106,7 @@ public class ProfileFragment extends Fragment {
                 queryPosts();
             }
         });
+
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(
                 android.R.color.holo_blue_bright,
@@ -106,6 +123,32 @@ public class ProfileFragment extends Fragment {
                 logOutUser();
             }
         });
+    }
+
+    private void loadNextDataFromApi(int page) {
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.include(Post.KEY_USER);
+        query.setLimit(20);
+        Date olderThanDate = allPosts.get(allPosts.size()-1).getCreatedAt();
+        Log.d(TAG, "Getting posts older than: " + olderThanDate);
+        query.whereLessThan(Post.KEY_CREATED_AT,
+                allPosts.get(allPosts.size()-1).getCreatedAt());
+        query.addDescendingOrder(Post.KEY_CREATED_AT);
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> posts, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Issue with getting posts", e);
+                    return;
+                }
+                for(Post post : posts) {
+                    Log.i(TAG, "Post: " + post.getDescription() + ", Username: " + post.getUser().getUsername());
+                }
+                adapter.addAll(posts);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
     }
 
     private void queryPosts() {
@@ -129,6 +172,7 @@ public class ProfileFragment extends Fragment {
                 adapter.clear();
                 adapter.addAll(posts);
                 adapter.notifyDataSetChanged();
+                scrollListener.resetState();
                 swipeContainer.setRefreshing(false);
             }
         });
