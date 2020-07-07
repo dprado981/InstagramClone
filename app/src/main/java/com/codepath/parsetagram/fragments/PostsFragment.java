@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.codepath.parsetagram.Post;
 import com.codepath.parsetagram.PostsAdapter;
@@ -31,7 +32,8 @@ public class PostsFragment extends Fragment {
 
     public static final String TAG = PostsFragment.class.getSimpleName();
 
-    private Context context;
+    protected Context context;
+    protected LinearLayout llHeader;
     private RecyclerView rvPosts;
     protected PostsAdapter adapter;
 
@@ -53,7 +55,10 @@ public class PostsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         context = getContext();
+        llHeader = view.findViewById(R.id.llHeader);
         rvPosts = view.findViewById(R.id.rvPosts);
+
+        llHeader.setVisibility(View.GONE);
 
         allPosts = new ArrayList<>();
         adapter = new PostsAdapter(context, allPosts);

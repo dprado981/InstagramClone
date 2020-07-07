@@ -9,6 +9,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +23,7 @@ import android.widget.Toast;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 /** A login screen that offers login via username/password */
 public class LoginActivity extends AppCompatActivity {
@@ -26,7 +31,9 @@ public class LoginActivity extends AppCompatActivity {
     public static final String TAG = LoginActivity.class.getSimpleName();
     private EditText etUsername;
     private EditText etPassword;
+    private TextView tvConfirmation;
     private Button btnLogin;
+    private Button btnRegister;
     private ProgressBar pbLogin;
 
     private Context context;
@@ -43,7 +50,9 @@ public class LoginActivity extends AppCompatActivity {
 
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
+        tvConfirmation = findViewById(R.id.tvConfirmation);
         btnLogin = findViewById(R.id.btnLogin);
+        btnRegister = findViewById(R.id.btnRegister);
         pbLogin = findViewById(R.id.pbLogin);
 
         etUsername.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -74,6 +83,16 @@ public class LoginActivity extends AppCompatActivity {
                 loginUser(username, password);
             }
         });
+
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i(TAG, "onClick register button");
+                String username = etUsername.getText().toString();
+                String password = etPassword.getText().toString();
+                registerUser(username, password);
+            }
+        });
     }
 
     private void loginUser(String username, String password) {
@@ -91,10 +110,77 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void registerUser(String username, String password) {
+        // Create the ParseUser
+        ParseUser user = new ParseUser();
+        // Set core properties
+        user.setUsername(username);
+        user.setPassword(password);
+        // Invoke signUpInBackground
+        user.signUpInBackground(new SignUpCallback() {
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Issue with registration:", e);
+                    tvConfirmation.setText(R.string.fail_registration);
+                    fadeIn(tvConfirmation, 700);
+                    fadeOut(tvConfirmation, 700);
+                    return;
+                }
+                Log.i(TAG, "Registration successful!");
+                etUsername.setText("");
+                etPassword.setText("");
+                tvConfirmation.setText(R.string.success_registration);
+                fadeIn(tvConfirmation, 700);
+                fadeOut(tvConfirmation, 700);
+            }
+        });
+    }
+
     private void goToMainActivity() {
         Intent intent = new Intent(context, MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    public static void fadeIn(final View view, long animationDuration) {
+        Animation fadeIn = new AlphaAnimation(0, 1);
+        fadeIn.setInterpolator(new DecelerateInterpolator());
+        fadeIn.setDuration(animationDuration);
+        fadeIn.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                view.setVisibility(View.VISIBLE);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        view.startAnimation(fadeIn);
+    }
+
+    public static void fadeOut(final View view, long animationDuration) {
+        Animation fadeOut = new AlphaAnimation(1, 0);
+        fadeOut.setInterpolator(new AccelerateInterpolator());
+        fadeOut.setStartOffset(animationDuration);
+        fadeOut.setDuration(animationDuration);
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                view.setVisibility(View.INVISIBLE);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        view.startAnimation(fadeOut);
     }
 
 }

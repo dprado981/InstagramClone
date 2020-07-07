@@ -8,7 +8,6 @@ import androidx.fragment.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.codepath.parsetagram.fragments.ComposeFragment;
 import com.codepath.parsetagram.fragments.PostsFragment;

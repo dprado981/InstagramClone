@@ -13,4 +13,8 @@
     <string name="home">Home</string>
     <string name="compose">Compose</string>
     <string name="profile">Profile</string>
+    <string name="register">Register</string>
+    <string name="log_out">Log Out</string>
+    <string name="fail_registration">Sorry, this username is already taken!</string>
+    <string name="success_registration">Great! Sign in above!</string>
 </resources>
