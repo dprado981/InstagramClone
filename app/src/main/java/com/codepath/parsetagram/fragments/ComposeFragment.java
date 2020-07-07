@@ -1,5 +1,6 @@
 package com.codepath.parsetagram.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -21,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.codepath.parsetagram.Post;
@@ -48,6 +52,7 @@ public class ComposeFragment extends Fragment {
     private Button btnCapture;
     private ImageView ivPreview;
     private Button btnPost;
+    private ProgressBar progressBar;
 
     private Context context;
 
@@ -74,6 +79,7 @@ public class ComposeFragment extends Fragment {
         btnCapture = view.findViewById(R.id.btnCapture);
         ivPreview = view.findViewById(R.id.ivPreview);
         btnPost = view.findViewById(R.id.btnPost);
+        progressBar = view.findViewById(R.id.pbLoading);
 
         context = getContext();
 
@@ -155,6 +161,7 @@ public class ComposeFragment extends Fragment {
     }
 
     private void savePost(String description, File photoFile, ParseUser currentUser) {
+        progressBar.setVisibility(ProgressBar.VISIBLE);
         Post post = new Post();
         post.setDescription(description);
         post.setImage(new ParseFile(photoFile));
@@ -170,6 +177,12 @@ public class ComposeFragment extends Fragment {
                 Log.i(TAG, "Post was saved successfully");
                 etDescription.setText("");
                 ivPreview.setImageResource(0);
+                progressBar.setVisibility(ProgressBar.INVISIBLE);
+                FragmentActivity activity = getActivity();
+                if (activity != null) {
+                    FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContainer, new PostsFragment()).commit();
+                }
             }
         });
     }
