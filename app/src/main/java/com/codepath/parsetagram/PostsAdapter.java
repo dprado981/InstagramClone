@@ -1,6 +1,8 @@
 package com.codepath.parsetagram;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,8 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     private Context context;
     private List<Post> posts;
+
+    public static final String TAG = PostsAdapter.class.getSimpleName();
 
     public PostsAdapter(Context context, List<Post> posts) {
         this.context = context;
@@ -55,21 +59,31 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView tvUsername;
         private ImageView ivImage;
         private TextView tvDescription;
+        private Post post;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvUsername = itemView.findViewById(R.id.tvUsername);
             ivImage = itemView.findViewById(R.id.ivImage);
             tvDescription = itemView.findViewById(R.id.tvDescription);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(context, PostDetail.class);
+            intent.putExtra("objectId", post.getObjectId());
+            context.startActivity(intent);
         }
 
         // Bind the Post data to the view elements
         public void bind(Post post) {
+            this.post = post;
             tvDescription.setText(post.getUser().getUsername());
             tvDescription.setText(post.getDescription());
             ParseFile image = post.getImage();

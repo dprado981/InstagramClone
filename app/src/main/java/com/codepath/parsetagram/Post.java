@@ -37,6 +37,4 @@ public class Post extends ParseObject {
         return getParseUser(KEY_USER);
     }
 
-
-
 }
