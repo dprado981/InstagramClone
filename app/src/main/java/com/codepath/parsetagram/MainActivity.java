@@ -13,6 +13,7 @@ import com.codepath.parsetagram.fragments.ComposeFragment;
 import com.codepath.parsetagram.fragments.PostsFragment;
 import com.codepath.parsetagram.fragments.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
                         fragment = new ProfileFragment();
                         break;
                 }
+                Bundle bundle = new Bundle();
+                bundle.putString("userId", ParseUser.getCurrentUser().getObjectId());
+                fragment.setArguments(bundle);
                 fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
                 return true;
             }

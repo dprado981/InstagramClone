@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.codepath.parsetagram.EndlessRecyclerViewScrollListener;
 import com.codepath.parsetagram.LoginActivity;
 import com.codepath.parsetagram.Post;
@@ -30,6 +31,8 @@ import com.codepath.parsetagram.R;
 import com.parse.FindCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -42,18 +45,23 @@ import java.util.List;
  */
 public class ProfileFragment extends Fragment {
 
+    // TODO: make different fragment that extends this one for other profile view
+    // TODO: make this fragment be like oh: ur logged in show personal pic
+
     public static final String TAG = ProfileFragment.class.getSimpleName();
 
     private Context context;
     private LinearLayout llHeader;
     private ImageView ivProfile;
+    private ImageView ivUpdateProfilePicture;
     private TextView tvLogOut;
-    private PostsAdapter adapter;
     private RecyclerView rvPosts;
     private SwipeRefreshLayout swipeContainer;
-    private EndlessRecyclerViewScrollListener scrollListener;
 
+    private ParseUser user;
     private List<Post> allPosts;
+    private PostsAdapter adapter;
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -72,6 +80,9 @@ public class ProfileFragment extends Fragment {
 
         context = getContext();
         llHeader = view.findViewById(R.id.llHeader);
+        ivProfile = view.findViewById(R.id.ivProfile);
+        ivUpdateProfilePicture = view.findViewById(R.id.ivUpdateProfilePicture);
+        tvLogOut = view.findViewById(R.id.tvLogOut);
         swipeContainer = view.findViewById(R.id.swipeContainer);
         rvPosts = view.findViewById(R.id.rvPosts);
 
@@ -80,16 +91,24 @@ public class ProfileFragment extends Fragment {
 
         rvPosts.setAdapter(adapter);
 
+
+        Bundle bundle = getArguments();
+        String userId = null;
+        if (bundle != null) {
+            userId = getArguments().getString("userId");
+        }
+
+        setProfile(userId);
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 3);
         rvPosts.setLayoutManager(gridLayoutManager);
-        queryPosts();
 
         scrollListener = new EndlessRecyclerViewScrollListener(gridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
-                loadNextDataFromApi(page);
+                loadNextDataFromApi();
             }
         };
 
@@ -114,9 +133,6 @@ public class ProfileFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        ivProfile = view.findViewById(R.id.ivProfile);
-        tvLogOut = view.findViewById(R.id.tvLogOut);
-
         tvLogOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -125,10 +141,11 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void loadNextDataFromApi(int page) {
+    private void loadNextDataFromApi() {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_USER);
         query.setLimit(20);
+        query.whereEqualTo(Post.KEY_USER, user);
         Date olderThanDate = allPosts.get(allPosts.size()-1).getCreatedAt();
         Log.d(TAG, "Getting posts older than: " + olderThanDate);
         query.whereLessThan(Post.KEY_CREATED_AT,
@@ -156,8 +173,7 @@ public class ProfileFragment extends Fragment {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         // Find all posts from current user
         query.include(Post.KEY_USER);
-        System.out.println(ParseUser.getCurrentUser().getUsername());
-        query.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
+        query.whereEqualTo(Post.KEY_USER, user);
         query.addDescendingOrder(Post.KEY_CREATED_AT);
         query.findInBackground(new FindCallback<Post>() {
             @Override
@@ -174,6 +190,35 @@ public class ProfileFragment extends Fragment {
                 adapter.notifyDataSetChanged();
                 scrollListener.resetState();
                 swipeContainer.setRefreshing(false);
+            }
+        });
+    }
+
+    private void setProfile(final String userId) {
+        ParseQuery<ParseUser> query = ParseQuery.getQuery("_User");
+        query.whereEqualTo("objectId", userId);
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> users, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Issue with getting user", e);
+                    return;
+                }
+                user = users.get(0);
+                ParseFile image = user.getParseFile("profileImage");
+                Log.i(TAG, "Showing profile of: " + user.getUsername());
+                if (image != null) {
+                    Glide.with(context)
+                            .load(image.getUrl())
+                            .placeholder(R.drawable.instagram_user_outline_24)
+                            .into(ivProfile);
+                }
+
+                if (!ParseUser.getCurrentUser().getUsername().equals(user.getUsername())) {
+                    ivUpdateProfilePicture.setVisibility(View.GONE);
+                }
+
+                queryPosts();
             }
         });
     }
