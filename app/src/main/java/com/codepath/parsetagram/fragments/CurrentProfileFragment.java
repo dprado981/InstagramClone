@@ -65,6 +65,7 @@ public class CurrentProfileFragment extends ProfileFragment {
         });
     }
 
+    /** Logs out a user anr returns to the login page */
     private void logOutUser() {
         Log.i(TAG, "Attempting to log out user");
         ParseUser.logOutInBackground(new LogOutCallback() {
@@ -74,20 +75,14 @@ public class CurrentProfileFragment extends ProfileFragment {
                     Log.e(TAG, "Issue with logout:", e);
                     return;
                 }
-                goToLogin();
-                Toast.makeText(context, "Success!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, LoginActivity.class);
+                startActivity(intent);
+                Activity activity = getActivity();
+                if (activity != null ){
+                    activity.finishAffinity();
+                }
             }
         });
-    }
-
-    /** Returns to Login page and removes activity from backstack */
-    private void goToLogin() {
-        Intent intent = new Intent(context, LoginActivity.class);
-        startActivity(intent);
-        Activity activity = getActivity();
-        if (activity != null ){
-            activity.finishAffinity();
-        }
     }
 
     private void launchCamera() {

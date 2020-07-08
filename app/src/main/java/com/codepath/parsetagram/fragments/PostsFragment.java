@@ -2,6 +2,10 @@ package com.codepath.parsetagram.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,13 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import android.os.Parcelable;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.codepath.parsetagram.EndlessRecyclerViewScrollListener;
 import com.codepath.parsetagram.Post;
@@ -36,15 +33,14 @@ public class PostsFragment extends Fragment {
 
     public static final String TAG = PostsFragment.class.getSimpleName();
 
-    private Context context;
-    private PostsAdapter adapter;
-    private SwipeRefreshLayout swipeContainer;
-    private EndlessRecyclerViewScrollListener scrollListener;
+    protected Context context;
+    protected PostsAdapter adapter;
+    protected SwipeRefreshLayout swipeContainer;
+    protected EndlessRecyclerViewScrollListener scrollListener;
 
-    private List<Post> allPosts;
+    protected List<Post> allPosts;
 
-    private RecyclerView rvPosts;
-
+    protected RecyclerView rvPosts;
 
     public PostsFragment() {
         // Required empty public constructor
@@ -54,8 +50,13 @@ public class PostsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_posts, container, false);
+        return inflater.inflate(getLayout(), container, false);
     }
+
+    protected int getLayout() {
+        return R.layout.fragment_posts;
+    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -65,22 +66,18 @@ public class PostsFragment extends Fragment {
         swipeContainer = view.findViewById(R.id.swipeContainer);
         rvPosts = view.findViewById(R.id.rvPosts);
 
+        RecyclerView.LayoutManager layoutManager = getLayoutManager(context);
         allPosts = new ArrayList<>();
-        adapter = new PostsAdapter(context, allPosts, false);
+        setupRecyclerView(layoutManager);
 
-        rvPosts.setAdapter(adapter);
+        queryPosts(false);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        rvPosts.setLayoutManager(linearLayoutManager);
-        
-        queryPosts();
-
-        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+        scrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
-                loadNextDataFromApi();
+                queryPosts(true);
             }
         };
 
@@ -94,9 +91,10 @@ public class PostsFragment extends Fragment {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                queryPosts();
+                queryPosts(false);
             }
         });
+
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(
                 android.R.color.holo_blue_bright,
@@ -105,39 +103,30 @@ public class PostsFragment extends Fragment {
                 android.R.color.holo_red_light);
     }
 
-    private void loadNextDataFromApi() {
-        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
-        query.include(Post.KEY_USER);
-        query.setLimit(20);
-        Date olderThanDate = allPosts.get(allPosts.size()-1).getCreatedAt();
-        Log.d(TAG, "Getting posts older than: " + olderThanDate);
-        query.whereLessThan(Post.KEY_CREATED_AT,
-                allPosts.get(allPosts.size()-1).getCreatedAt());
-        query.addDescendingOrder(Post.KEY_CREATED_AT);
-        query.findInBackground(new FindCallback<Post>() {
-            @Override
-            public void done(List<Post> posts, ParseException e) {
-                if (e != null) {
-                    Log.e(TAG, "Issue with getting posts", e);
-                    return;
-                }
-                for(Post post : posts) {
-                    Log.i(TAG, "Post: " + post.getDescription() + ", Username: " + post.getUser().getUsername());
-                }
-                adapter.addAll(posts);
-                adapter.notifyDataSetChanged();
-            }
-        });
-
+    protected RecyclerView.LayoutManager getLayoutManager(Context context) {
+        return new LinearLayoutManager(context);
     }
 
-    private void queryPosts() {
+    protected void setupRecyclerView(RecyclerView.LayoutManager layoutManager) {
+        adapter = new PostsAdapter(context, allPosts, false);
+        rvPosts.setAdapter(adapter);
+        rvPosts.setLayoutManager(layoutManager);
+    }
+
+
+    protected void queryPosts(final boolean loadNext) {
         // Specify which class to query
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         // Find all posts
         query.include(Post.KEY_USER);
         query.setLimit(20);
         query.addDescendingOrder(Post.KEY_CREATED_AT);
+        if (loadNext) {
+            Date olderThanDate = allPosts.get(allPosts.size()-1).getCreatedAt();
+            Log.i(TAG, "Loading posts older than " + olderThanDate);
+            query.whereLessThan(Post.KEY_CREATED_AT, olderThanDate);
+        }
+        addExtraPostQueryOptions(query);
         query.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> posts, ParseException e) {
@@ -145,16 +134,17 @@ public class PostsFragment extends Fragment {
                     Log.e(TAG, "Issue with getting posts", e);
                     return;
                 }
-                for(Post post : posts) {
-                    Log.i(TAG, "Post: " + post.getDescription() + ", Username: " + post.getUser().getUsername());
+                if (!loadNext) {
+                    adapter.clear();
+                    scrollListener.resetState();
+                    swipeContainer.setRefreshing(false);
                 }
-                adapter.clear();
                 adapter.addAll(posts);
                 adapter.notifyDataSetChanged();
-                scrollListener.resetState();
-                swipeContainer.setRefreshing(false);
             }
         });
     }
+
+    protected void addExtraPostQueryOptions(ParseQuery<Post> query) { query.setLimit(20); }
 
 }
