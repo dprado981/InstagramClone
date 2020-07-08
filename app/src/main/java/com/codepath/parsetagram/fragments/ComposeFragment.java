@@ -45,8 +45,7 @@ public class ComposeFragment extends Fragment {
 
     public static final String TAG = ComposeFragment.class.getSimpleName();
     public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 42;
-
-    private static final String PHOTO_FILE_NAME = "photo.jpg";
+    public static final String PHOTO_FILE_NAME = "photo.jpg";
 
     private EditText etDescription;
     private Button btnCapture;
@@ -112,7 +111,7 @@ public class ComposeFragment extends Fragment {
         // create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Create a File reference for future access
-        photoFile = getPhotoFileUri(PHOTO_FILE_NAME);
+        photoFile = getPhotoFileUri(PHOTO_FILE_NAME, context);
 
         // wrap File object into a content provider
         // required for API >= 24
@@ -145,7 +144,7 @@ public class ComposeFragment extends Fragment {
     }
 
     // Returns the File for a photo stored on disk given the fileName
-    public File getPhotoFileUri(String fileName) {
+    public static File getPhotoFileUri(String fileName, Context context) {
         // Get safe storage directory for photos
         // Use `getExternalFilesDir` on Context to access package-specific directories.
         // This way, we don't need to request external read/write runtime permissions.
