@@ -7,9 +7,11 @@ import androidx.fragment.app.FragmentManager;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.codepath.parsetagram.fragments.ComposeFragment;
+import com.codepath.parsetagram.fragments.CurrentProfileFragment;
 import com.codepath.parsetagram.fragments.PostsFragment;
 import com.codepath.parsetagram.fragments.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -46,17 +48,35 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.actionProfile:
                     default:
-                        fragment = new ProfileFragment();
+                        fragment = new CurrentProfileFragment();
                         break;
                 }
                 Bundle bundle = new Bundle();
                 bundle.putString("userId", ParseUser.getCurrentUser().getObjectId());
                 fragment.setArguments(bundle);
-                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).addToBackStack(null).commit();
                 return true;
             }
         });
 
         bottomNavigation.setSelectedItemId(R.id.actionHome);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "back pressed");
+        FragmentManager manager = getSupportFragmentManager();
+        if (manager.getBackStackEntryCount() > 0) {
+            super.onBackPressed();
+            Fragment currentFragment = (Fragment) manager.findFragmentById(R.id.flContainer);
+            if (currentFragment instanceof CurrentProfileFragment) {
+                bottomNavigation.getMenu().getItem(2).setChecked(true);
+            } else if (currentFragment instanceof ComposeFragment) {
+                bottomNavigation.getMenu().getItem(1).setChecked(true);
+            } else {
+                bottomNavigation.getMenu().getItem(0).setChecked(true);
+            }
+        }
+
     }
 }
