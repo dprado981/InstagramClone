@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -13,7 +12,6 @@ import android.view.MenuItem;
 import com.codepath.parsetagram.fragments.ComposeFragment;
 import com.codepath.parsetagram.fragments.CurrentProfileFragment;
 import com.codepath.parsetagram.fragments.PostsFragment;
-import com.codepath.parsetagram.fragments.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.ParseUser;
 
@@ -25,13 +23,10 @@ public class MainActivity extends AppCompatActivity {
 
     final FragmentManager fragmentManager = getSupportFragmentManager();
 
-    private Context context;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        context = this;
 
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
@@ -68,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager manager = getSupportFragmentManager();
         if (manager.getBackStackEntryCount() > 0) {
             super.onBackPressed();
-            Fragment currentFragment = (Fragment) manager.findFragmentById(R.id.flContainer);
+            Fragment currentFragment = manager.findFragmentById(R.id.flContainer);
             if (currentFragment instanceof CurrentProfileFragment) {
                 bottomNavigation.getMenu().getItem(2).setChecked(true);
             } else if (currentFragment instanceof ComposeFragment) {

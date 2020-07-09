@@ -18,13 +18,13 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     // True if we are still waiting for the last set of data to load.
     private boolean loading = true;
     // Sets the starting page index
-    private int startingPageIndex = 0;
+    private final int startingPageIndex = 0;
 
     RecyclerView.LayoutManager mLayoutManager;
 
     public EndlessRecyclerViewScrollListener(RecyclerView.LayoutManager layoutManager) {
         if (layoutManager instanceof LinearLayoutManager && !(layoutManager instanceof GridLayoutManager)) {
-            this.mLayoutManager = (LinearLayoutManager) layoutManager;
+            this.mLayoutManager = layoutManager;
         } else if (layoutManager instanceof GridLayoutManager) {
             GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
             this.mLayoutManager = gridLayoutManager;

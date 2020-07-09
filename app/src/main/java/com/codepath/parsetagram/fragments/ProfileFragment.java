@@ -29,9 +29,6 @@ import java.util.List;
  */
 public class ProfileFragment extends PostsFragment {
 
-    // TODO: make different fragment that extends this one for other profile view
-    // TODO: make this fragment be like oh: ur logged in show personal pic
-
     public static final String TAG = ProfileFragment.class.getSimpleName();
 
     protected ImageView ivProfile;

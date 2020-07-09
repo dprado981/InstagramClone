@@ -19,4 +19,6 @@
     <string name="success_registration">Great! Sign in above!</string>
     <string name="image">image</string>
     <string name="update_profile_picture">Update Profile Picture</string>
+    <string name="like_button">Like Button</string>
+    <string name="comment_button">Comment Button</string>
 </resources>
