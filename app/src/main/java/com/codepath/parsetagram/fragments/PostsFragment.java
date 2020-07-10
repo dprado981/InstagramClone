@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.codepath.parsetagram.EndlessRecyclerViewScrollListener;
-import com.codepath.parsetagram.data.model.Post;
+import com.codepath.parsetagram.data.models.Post;
 import com.codepath.parsetagram.PostsAdapter;
 import com.codepath.parsetagram.R;
 import com.parse.FindCallback;
@@ -40,6 +40,7 @@ public class PostsFragment extends Fragment {
 
     protected List<Post> allPosts;
 
+    protected RecyclerView.LayoutManager layoutManager;
     protected RecyclerView rvPosts;
 
     public PostsFragment() {
@@ -66,7 +67,7 @@ public class PostsFragment extends Fragment {
         swipeContainer = view.findViewById(R.id.swipeContainer);
         rvPosts = view.findViewById(R.id.rvPosts);
 
-        RecyclerView.LayoutManager layoutManager = getLayoutManager(context);
+        layoutManager = getLayoutManager(context);
         allPosts = new ArrayList<>();
         setupRecyclerView(layoutManager);
 

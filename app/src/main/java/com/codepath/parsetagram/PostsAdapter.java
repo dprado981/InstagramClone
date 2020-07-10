@@ -2,7 +2,6 @@ package com.codepath.parsetagram;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -26,7 +25,7 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.codepath.parsetagram.data.model.Post;
+import com.codepath.parsetagram.data.models.Post;
 import com.codepath.parsetagram.fragments.DetailFragment;
 import com.codepath.parsetagram.fragments.ProfileFragment;
 import com.parse.ParseFile;
@@ -133,8 +132,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             if (v == tvHeaderUsername || v == ivProfileImage || v == tvDescriptionUsername) {
                 Fragment fragment = new ProfileFragment();
                 Bundle bundle = new Bundle();
-                Log.d(TAG, post.getUser().getObjectId());
-                bundle.putString("userId", post.getUser().getObjectId());
+                bundle.putString("username", post.getUser().getUsername());
                 fragment.setArguments(bundle);
                 fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).addToBackStack(null).commit();
             }
@@ -145,25 +143,29 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 if (likesList.contains(user.getUsername())) {
                     post.deleteLike(user);
                     Glide.with(context)
-                            .load(R.drawable.ufi_heart)
-                            .placeholder(R.drawable.ufi_heart)
+                            .load(R.drawable.ic_heart)
+                            .placeholder(R.drawable.ic_heart)
                             .into(ivLike);
                 } else {
                     post.addLike(user);
                     Glide.with(context)
-                            .load(R.drawable.ufi_heart_active)
-                            .placeholder(R.drawable.ufi_heart_active)
+                            .load(R.drawable.ic_heart_active)
+                            .placeholder(R.drawable.ic_heart_active)
                             .into(ivLike);
                 }
                 tvLikeCount.setText(likesList.size() +  " likes");
                 post.saveInBackground();
             }
 
-            if (v == itemView) {
+
+            if (v == itemView || v == ivComment) {
                 Fragment fragment = new DetailFragment();
                 Bundle bundle = new Bundle();
                 Log.d(TAG, post.getUser().getObjectId());
                 bundle.putString("objectId", post.getObjectId());
+                if (v == ivComment) {
+                    bundle.putBoolean("autoComment", true);
+                }
                 fragment.setArguments(bundle);
                 fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).addToBackStack(null).commit();
             }
@@ -189,7 +191,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             if (image != null) {
                 Glide.with(context)
                         .load(image.getUrl())
-                        .placeholder(R.drawable.ufi_heart_active)
+                        .placeholder(R.drawable.ic_heart_active)
                         .listener(new RequestListener<Drawable>() {
                             @Override
                             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -212,17 +214,19 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 if (profileImage != null) {
                     Glide.with(context)
                             .load(profileImage.getUrl())
-                            .placeholder(R.drawable.ufi_heart_active)
+                            .placeholder(R.drawable.ic_heart_active)
                             .into(ivProfileImage);
                 }
             }
 
             if (post.getLikesList().contains(ParseUser.getCurrentUser().getUsername())) {
                 Glide.with(context)
-                        .load(R.drawable.ufi_heart_active)
-                        .placeholder(R.drawable.ufi_heart_active)
+                        .load(R.drawable.ic_heart_active)
+                        .placeholder(R.drawable.ic_heart_active)
                         .into(ivLike);
             }
+
+
 
         }
 

@@ -2,10 +2,7 @@ package com.codepath.parsetagram;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +16,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.codepath.parsetagram.data.model.Comment;
-import com.codepath.parsetagram.fragments.DetailFragment;
+import com.codepath.parsetagram.data.models.Comment;
 import com.codepath.parsetagram.fragments.ProfileFragment;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -113,7 +109,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             if (profileImage != null) {
                 Glide.with(context)
                         .load(profileImage.getUrl())
-                        .placeholder(R.drawable.ufi_heart_active)
+                        .placeholder(R.drawable.ic_heart_active)
                         .into(ivProfileImage);
             }
 

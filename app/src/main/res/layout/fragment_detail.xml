@@ -7,23 +7,31 @@
     tools:context=".fragments.ComposeFragment">
 
     <include
-        android:id="@+id/itemPost"
-        layout="@layout/item_post" />
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeContainer"
+        android:id="@+id/postNoImage"
+        layout="@layout/post_no_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/llAddComment"
-        android:layout_below="@+id/itemPost"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvComments"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/llAddComment"
+        android:layout_below="@+id/postNoImage"
+        android:layout_marginTop="0dp">
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent">
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvComments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/llAddComment"
@@ -40,12 +48,14 @@
             android:ems="10"
             android:hint="@string/add_a_comment"
             android:importantForAutofill="no"
+            android:textColor="@color/colorText"
             android:inputType="textPersonName" />
 
         <Button
             android:id="@+id/btnPost"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:background="@color/colorAccentSecondaryMuted"
             android:text="@string/post" />
     </LinearLayout>
 

@@ -1,4 +1,4 @@
-package com.codepath.parsetagram.data.model;
+package com.codepath.parsetagram.data.models;
 
 import com.parse.ParseFile;
 import com.parse.ParseObject;

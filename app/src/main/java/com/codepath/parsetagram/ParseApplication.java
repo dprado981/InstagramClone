@@ -2,8 +2,8 @@ package com.codepath.parsetagram;
 
 import android.app.Application;
 
-import com.codepath.parsetagram.data.model.Comment;
-import com.codepath.parsetagram.data.model.Post;
+import com.codepath.parsetagram.data.models.Comment;
+import com.codepath.parsetagram.data.models.Post;
 import com.parse.Parse;
 import com.parse.ParseObject;
 

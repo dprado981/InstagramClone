@@ -1,6 +1,7 @@
 package com.codepath.parsetagram;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -19,7 +20,7 @@ import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String TAG = LoginActivity.class.getSimpleName();
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     private BottomNavigationView bottomNavigation;
 
@@ -31,6 +32,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         bottomNavigation = findViewById(R.id.bottomNavigation);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_logo);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle("");
+        }
+
 
         Intent intent = getIntent();
         if (intent.getExtras() != null) {
@@ -78,11 +87,11 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
             Fragment currentFragment = manager.findFragmentById(R.id.flContainer);
             if (currentFragment instanceof CurrentProfileFragment) {
-                bottomNavigation.getMenu().getItem(2).setChecked(true);
+                bottomNavigation.setSelectedItemId(R.id.actionProfile);
             } else if (currentFragment instanceof ComposeFragment) {
-                bottomNavigation.getMenu().getItem(1).setChecked(true);
+                bottomNavigation.setSelectedItemId(R.id.actionCompose);
             } else {
-                bottomNavigation.getMenu().getItem(0).setChecked(true);
+                bottomNavigation.setSelectedItemId(R.id.actionHome);
             }
         }
 

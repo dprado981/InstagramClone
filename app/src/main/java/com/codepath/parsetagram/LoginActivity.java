@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -88,10 +91,35 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "onClick register button");
+                pbLogin.setVisibility(View.VISIBLE);
                 String username = etUsername.getText().toString();
                 String password = etPassword.getText().toString();
                 registerUser(username, password);
             }
+        });
+
+        etUsername.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { checkButton(); }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { checkButton(); }
+
+            @Override
+            public void afterTextChanged(Editable editable) { checkButton(); }
+
+        });
+
+        etPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { checkButton(); }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { checkButton(); }
+
+            @Override
+            public void afterTextChanged(Editable editable) { checkButton(); }
+
         });
     }
 
@@ -102,6 +130,8 @@ public class LoginActivity extends AppCompatActivity {
             public void done(ParseUser user, ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Issue with login:", e);
+                    Toast.makeText(context, "Try Again", Toast.LENGTH_SHORT).show();
+                    pbLogin.setVisibility(View.INVISIBLE);
                     return;
                 }
                 goToMainActivity();
@@ -119,19 +149,21 @@ public class LoginActivity extends AppCompatActivity {
         // Invoke signUpInBackground
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
+                pbLogin.setVisibility(View.INVISIBLE);
                 if (e != null) {
                     Log.e(TAG, "Issue with registration:", e);
                     tvConfirmation.setText(R.string.fail_registration);
-                    fadeIn(tvConfirmation, 700);
-                    fadeOut(tvConfirmation, 700);
+                    fadeIn(tvConfirmation, 1000);
+                    fadeOut(tvConfirmation, 1000);
                     return;
                 }
                 Log.i(TAG, "Registration successful!");
                 etUsername.setText("");
                 etPassword.setText("");
                 tvConfirmation.setText(R.string.success_registration);
-                fadeIn(tvConfirmation, 700);
-                fadeOut(tvConfirmation, 700);
+                fadeIn(tvConfirmation, 1000);
+                fadeOut(tvConfirmation, 1000);
+                ParseUser.logOutInBackground();
             }
         });
     }
@@ -181,6 +213,16 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         view.startAnimation(fadeOut);
+    }
+
+    private void checkButton() {
+        if (!etUsername.getText().toString().isEmpty() && !etUsername.getText().toString().isEmpty()) {
+            btnLogin.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccentSecondary));
+            btnRegister.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccentSecondary));
+        } else {
+            btnLogin.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccentSecondaryMuted));
+            btnRegister.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccentSecondaryMuted));
+        }
     }
 
 }

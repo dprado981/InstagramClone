@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,7 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.codepath.parsetagram.data.model.Post;
+import com.codepath.parsetagram.data.models.Post;
 import com.codepath.parsetagram.PostsAdapter;
 import com.codepath.parsetagram.R;
 import com.parse.FindCallback;
@@ -32,6 +33,7 @@ public class ProfileFragment extends PostsFragment {
     public static final String TAG = ProfileFragment.class.getSimpleName();
 
     protected ImageView ivProfile;
+    protected TextView tvUsername;
 
     protected ParseUser user;
 
@@ -44,6 +46,7 @@ public class ProfileFragment extends PostsFragment {
         super.onViewCreated(view, savedInstanceState);
 
         ivProfile = view.findViewById(R.id.ivProfile);
+        tvUsername = view.findViewById(R.id.tvUsername);
 
         Bundle bundle = getArguments();
         String username = null;
@@ -82,9 +85,11 @@ public class ProfileFragment extends PostsFragment {
                 if (image != null) {
                     Glide.with(context)
                             .load(image.getUrl())
-                            .placeholder(R.drawable.instagram_user_outline_24)
+                            .placeholder(R.drawable.ic_user_outline)
                             .into(ivProfile);
                 }
+
+                tvUsername.setText(user.getUsername());
 
                 queryPosts(false);
             }

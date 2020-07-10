@@ -2,6 +2,7 @@ package com.codepath.parsetagram.fragments;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -13,11 +14,15 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,8 +37,8 @@ import com.bumptech.glide.request.target.Target;
 import com.codepath.parsetagram.CommentsAdapter;
 import com.codepath.parsetagram.EndlessRecyclerViewScrollListener;
 import com.codepath.parsetagram.R;
-import com.codepath.parsetagram.data.model.Comment;
-import com.codepath.parsetagram.data.model.Post;
+import com.codepath.parsetagram.data.models.Comment;
+import com.codepath.parsetagram.data.models.Post;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -52,9 +57,6 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
     private Context context;
 
-    private ImageView ivProfileImage;
-    private TextView tvHeaderUsername;
-    private ImageView ivImage;
     private ImageView ivLike;
     private TextView tvLikeCount;
     private TextView tvDescriptionUsername;
@@ -94,16 +96,13 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
         context = getContext();
 
-        View itemPost = view.findViewById(R.id.itemPost);
+        View postNoImage = view.findViewById(R.id.postNoImage);
 
-        tvHeaderUsername = itemPost.findViewById(R.id.tvHeaderUsername);
-        ivProfileImage = itemPost.findViewById(R.id.ivProfileImage);
-        ivImage = itemPost.findViewById(R.id.ivImage);
-        ivLike = itemPost.findViewById(R.id.ivLike);
-        tvLikeCount = itemPost.findViewById(R.id.tvLikeCount);
-        tvDescriptionUsername = itemPost.findViewById(R.id.tvDescriptionUsername);
-        tvDescription = itemPost.findViewById(R.id.tvDescription);
-        tvTimestamp = itemPost.findViewById(R.id.tvTimestamp);
+        ivLike = postNoImage.findViewById(R.id.ivLike);
+        tvLikeCount = postNoImage.findViewById(R.id.tvLikeCount);
+        tvDescriptionUsername = postNoImage.findViewById(R.id.tvDescriptionUsername);
+        tvDescription = postNoImage.findViewById(R.id.tvDescription);
+        tvTimestamp = postNoImage.findViewById(R.id.tvTimestamp);
 
         swipeContainer = view.findViewById(R.id.swipeContainer);
         rvComments = view.findViewById(R.id.rvComments);
@@ -114,8 +113,16 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
         Bundle bundle = getArguments();
         String objectId = null;
+        boolean autoComment = false;
         if (bundle != null) {
-            objectId = getArguments().getString("objectId");
+            objectId = bundle.getString("objectId");
+            autoComment = bundle.getBoolean("autoComment");
+        }
+
+        if (autoComment) {
+            etComment.requestFocus();
+            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         }
 
         queryPost(objectId);
@@ -156,8 +163,6 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        ivProfileImage.setOnClickListener(this);
-        tvHeaderUsername.setOnClickListener(this);
         tvDescriptionUsername.setOnClickListener(this);
         ivLike.setOnClickListener(this);
 
@@ -165,6 +170,9 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View view) {
                 String text = etComment.getText().toString();
+                if (text.isEmpty()) {
+                    return;
+                }
                 etComment.setText("");
                 Comment comment = new Comment();
                 comment.setText(text);
@@ -183,14 +191,28 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                     }
                 });
                 addCommentToScreen(comment);
+                InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
             }
+        });
+
+        etComment.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { checkButton(); }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { checkButton(); }
+
+            @Override
+            public void afterTextChanged(Editable editable) { checkButton(); }
         });
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onClick(View v) {
         FragmentManager fragmentManager = ((FragmentActivity) context).getSupportFragmentManager();
-        if (v == tvHeaderUsername || v == ivProfileImage || v == tvDescriptionUsername) {
+        if (v == tvDescriptionUsername) {
             Fragment fragment = new ProfileFragment();
             Bundle bundle = new Bundle();
             bundle.putString("username", post.getUser().getUsername());
@@ -204,17 +226,17 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
             if (likesList.contains(user.getUsername())) {
                 post.deleteLike(user);
                 Glide.with(context)
-                        .load(R.drawable.ufi_heart)
-                        .placeholder(R.drawable.ufi_heart)
+                        .load(R.drawable.ic_heart)
+                        .placeholder(R.drawable.ic_heart)
                         .into(ivLike);
             } else {
                 post.addLike(user);
                 Glide.with(context)
-                        .load(R.drawable.ufi_heart_active)
-                        .placeholder(R.drawable.ufi_heart_active)
+                        .load(R.drawable.ic_heart_active)
+                        .placeholder(R.drawable.ic_heart_active)
                         .into(ivLike);
             }
-            tvLikeCount.setText(post.getLikesList().size() +  " likes");
+            tvLikeCount.setText(post.getLikesList().size() +  getString(R.string.space_likes));
             post.saveInBackground();
         }
     }
@@ -243,52 +265,20 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 post = posts.get(0);
                 user = post.getUser();
 
-                // Set ImageViews
-                ParseFile image = post.getImage();
-                ParseFile profileImage = null;
-                try {
-                    profileImage = user.fetchIfNeeded().getParseFile("profileImage");
-                } catch (ParseException ex) {
-                    ex.printStackTrace();
-                }
-                if (image != null) {
-                    Glide.with(context)
-                            .load(image.getUrl())
-                            .placeholder(R.drawable.ufi_heart_active)
-                            .listener(new RequestListener<Drawable>() {
-                                @Override
-                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                    Log.e(TAG, "Glide failed to load image");
-                                    return false;
-                                }
-
-                                @Override
-                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                    // Make all images square
-                                    ivImage.getLayoutParams().height = ((View) ivImage.getParent()).getWidth();
-                                    return false;
-                                }
-                            })
-                            .into(ivImage);
-                }
-                if (profileImage != null) {
-                    Glide.with(context)
-                            .load(profileImage.getUrl())
-                            .placeholder(R.drawable.ufi_heart_active)
-                            .into(ivProfileImage);
-                }
-
-                tvHeaderUsername.setText(user.getUsername());
                 tvLikeCount.setText(post.getLikesList().size() +  " likes");
 
                 if (post.getLikesList().contains(currentUser.getUsername())) {
                     Glide.with(context)
-                            .load(R.drawable.ufi_heart_active)
-                            .placeholder(R.drawable.ufi_heart_active)
+                            .load(R.drawable.ic_heart_active)
+                            .placeholder(R.drawable.ic_heart_active)
                             .into(ivLike);
                 }
 
-                tvDescriptionUsername.setText(user.getUsername());
+                try {
+                    tvDescriptionUsername.setText(user.fetchIfNeeded().getUsername());
+                } catch (ParseException ex) {
+                    ex.printStackTrace();
+                }
                 tvDescription.setText(post.getDescription());
 
                 long createdAt = post.getCreatedAt().getTime();
@@ -331,5 +321,13 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
                 adapter.notifyDataSetChanged();
             }
         });
+    }
+
+    private void checkButton() {
+        if (!etComment.getText().toString().isEmpty()) {
+            btnPost.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccentSecondary));
+        } else {
+            btnPost.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccentSecondaryMuted));
+        }
     }
 }

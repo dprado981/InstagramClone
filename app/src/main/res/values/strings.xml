@@ -22,4 +22,9 @@
     <string name="like_button">Like Button</string>
     <string name="comment_button">Comment Button</string>
     <string name="add_a_comment">Add a comment…</string>
+    <string name="share">Share</string>
+    <string name="open_camera">Open Camera</string>
+    <string name="open_photo_gallery">Open Photo Gallery</string>
+    <string name="open_gallery">Open Gallery</string>
+    <string name="space_likes">\" likes\"</string>
 </resources>
