@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import com.codepath.parsetagram.fragments.ComposeFragment;
 import com.codepath.parsetagram.fragments.CurrentProfileFragment;
 import com.codepath.parsetagram.fragments.PostsFragment;
+import com.codepath.parsetagram.fragments.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.parse.ParseUser;
 
@@ -30,6 +32,17 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
+        Intent intent = getIntent();
+        if (intent.getExtras() != null) {
+            String username = intent.getStringExtra("username");
+            Fragment fragment = new ProfileFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("username", username);
+            fragment.setArguments(bundle);
+            fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).addToBackStack(null).commit();
+
+        }
+
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -47,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
                 Bundle bundle = new Bundle();
-                bundle.putString("userId", ParseUser.getCurrentUser().getObjectId());
+                bundle.putString("username", ParseUser.getCurrentUser().getUsername());
                 fragment.setArguments(bundle);
                 fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).addToBackStack(null).commit();
                 return true;

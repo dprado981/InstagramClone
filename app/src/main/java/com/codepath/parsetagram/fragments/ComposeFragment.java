@@ -26,7 +26,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.codepath.parsetagram.Post;
+import com.codepath.parsetagram.data.model.Post;
 import com.codepath.parsetagram.R;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -56,6 +56,7 @@ public class ComposeFragment extends Fragment {
 
     private File photoFile;
 
+    // TODO: Add option for camera
 
     public ComposeFragment() {
         // Required empty public constructor

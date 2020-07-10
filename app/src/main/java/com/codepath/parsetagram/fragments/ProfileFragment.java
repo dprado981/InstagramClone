@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.codepath.parsetagram.Post;
+import com.codepath.parsetagram.data.model.Post;
 import com.codepath.parsetagram.PostsAdapter;
 import com.codepath.parsetagram.R;
 import com.parse.FindCallback;
@@ -46,12 +46,11 @@ public class ProfileFragment extends PostsFragment {
         ivProfile = view.findViewById(R.id.ivProfile);
 
         Bundle bundle = getArguments();
-        String userId = null;
+        String username = null;
         if (bundle != null) {
-            userId = getArguments().getString("userId");
+            username = getArguments().getString("username");
         }
-
-        setProfile(userId);
+        setProfile(username);
     }
 
     @Override
@@ -66,9 +65,10 @@ public class ProfileFragment extends PostsFragment {
         rvPosts.setLayoutManager(layoutManager);
     }
 
-    private void setProfile(final String userId) {
+    private void setProfile(final String username) {
         ParseQuery<ParseUser> query = ParseQuery.getQuery("_User");
-        query.whereEqualTo("objectId", userId);
+        Log.d(TAG, "getting user with username: " + username);
+        query.whereEqualTo("username", username);
         query.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> users, ParseException e) {

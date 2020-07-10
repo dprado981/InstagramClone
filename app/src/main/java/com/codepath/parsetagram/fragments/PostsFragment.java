@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.codepath.parsetagram.EndlessRecyclerViewScrollListener;
-import com.codepath.parsetagram.Post;
+import com.codepath.parsetagram.data.model.Post;
 import com.codepath.parsetagram.PostsAdapter;
 import com.codepath.parsetagram.R;
 import com.parse.FindCallback;
@@ -25,7 +25,6 @@ import com.parse.ParseQuery;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A simple {@link Fragment} subclass.

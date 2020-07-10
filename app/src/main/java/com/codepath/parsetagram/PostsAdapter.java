@@ -3,7 +3,6 @@ package com.codepath.parsetagram;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.format.DateUtils;
@@ -27,12 +26,10 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.codepath.parsetagram.data.model.Post;
+import com.codepath.parsetagram.fragments.DetailFragment;
 import com.codepath.parsetagram.fragments.ProfileFragment;
-import com.parse.FindCallback;
-import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.util.List;
@@ -82,8 +79,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        // TODO: comments
 
         private final LinearLayout llHeader;
         private final TextView tvHeaderUsername;
@@ -165,9 +160,12 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             }
 
             if (v == itemView) {
-                Intent intent = new Intent(context, PostDetail.class);
-                intent.putExtra("objectId", post.getObjectId());
-                context.startActivity(intent);
+                Fragment fragment = new DetailFragment();
+                Bundle bundle = new Bundle();
+                Log.d(TAG, post.getUser().getObjectId());
+                bundle.putString("objectId", post.getObjectId());
+                fragment.setArguments(bundle);
+                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).addToBackStack(null).commit();
             }
         }
 
