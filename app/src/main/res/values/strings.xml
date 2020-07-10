@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Parsetragram</string>
+    <string name="app_name">Parsetagram</string>
     <!-- Strings related to login -->
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
@@ -26,5 +26,5 @@
     <string name="open_camera">Open Camera</string>
     <string name="open_photo_gallery">Open Photo Gallery</string>
     <string name="open_gallery">Open Gallery</string>
-    <string name="space_likes">\" likes\"</string>
+    <string name="space_likes">" likes"</string>
 </resources>

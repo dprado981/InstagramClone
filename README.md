@@ -35,7 +35,10 @@ The following **stretch** features are implemented:
 
 The following **additional** features are implemented:
 
-- [x] Allows for smooth navigation using back button
+- [x] Allows likes to be made from the feed
+- [x] Can click on username/profile image in a comment and go to that user's profile
+- [x] Adds messages below text box when trying to log in/register 
+- [x] Only allows you to post/comment/login/register if text and/or photo fields aren't empty
 
 ## Video Walkthrough
 
@@ -54,7 +57,7 @@ List an 3rd party libraries, icons, graphics, or other assets you used in your a
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+Fixed extra quotes around "x likes" after recording walkthrough
 
 ## License
 
