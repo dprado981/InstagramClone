@@ -2,7 +2,7 @@
 
 **Parsetagram** is a photo sharing app using Parse as its backend.
 
-Time spent: **X** hours spent in total
+Time spent: **20** hours spent in total
 
 ## User Stories
 
@@ -39,12 +39,13 @@ The following **additional** features are implemented:
 - [x] Can click on username/profile image in a comment and go to that user's profile
 - [x] Adds messages below text box when trying to log in/register 
 - [x] Only allows you to post/comment/login/register if text and/or photo fields aren't empty
+- [x] Add Instagram logo to app bar
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.com/dprado981/Parsetagram/blob/master/ParsetagramWalkthrough.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
